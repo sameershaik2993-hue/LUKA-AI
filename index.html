@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Luka AI Voice</title>
+<style>
+/* Anime Mode */
+.anime-screen {
+  display: none;
+  padding: 15px 5px;
+}
+
+.anime-screen.active {
+  display: block;
+}
+
+.anime-avatar {
+  width: 190px;
+  height: 190px;
+  margin: 20px auto;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 100px;
+  background: radial-gradient(circle, #8c4de8, #211044);
+  border: 3px solid #d8a5ff;
+  box-shadow: 0 0 30px #a855f7;
+}
+
+.anime-avatar.talking {
+  animation: avatarTalk 0.25s infinite alternate;
+}
+
+@keyframes avatarTalk {
+  from { transform: scale(1); box-shadow: 0 0 20px #a855f7; }
+  to { transform: scale(1.04); box-shadow: 0 0 38px #e879f9; }
+}
+
+.anime-bubble {
+  background: #352057;
+  border: 1px solid #d8a5ff;
+  border-radius: 16px;
+  padding: 15px;
+  margin: 15px auto;
+  max-width: 420px;
+  min-height: 55px;
+}
+
+.anime-screen button {
+  margin: 7px;
+}
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: white;
+  text-align: center;
+  background: radial-gradient(ellipse at top, #54277f, #17153d, #080b20);
+}
+
+h1 {
+  font-size: 36px;
+  text-shadow: 0 0 18px #d8a5ff;
+}
+
+.card {
+  max-width: 620px;
+  margin: 30px auto;
+  padding: 20px;
+  border: 1px solid #a879ec;
+  border-radius: 20px;
+  background: #100f2be8;
+  box-shadow: 0 0 25px #482477;
+}
+
+button, select {
+  padding: 12px;
+  margin: 6px;
+  border-radius: 12px;
+  border: 1px solid #d8a5ff;
+  background: #38215f;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+button:hover { background: #7046d8; }
+
+#status {
+  color: #dfc5ff;
+  min-height: 24px;
+}
+
+#messages {
+  text-align: left;
+  min-height: 100px;
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 16px 0;
+}
+
+.msg {
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.bot { background: #352057; }
+.user { background: #075985; }
+
+form {
+  display: flex;
+  gap: 8px;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: #17172f;
+  color: white;
+  border: 1px solid #9c7ad7;
+}
+.card {
+  position: relative;
+  padding-top: 65px;
+}
+
+.menu-wrap {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+}
+
+#menuButton {
+  font-size: 25px;
+  padding: 5px 14px;
+}
+
+.settings-menu {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  width: 230px;
+  padding: 15px;
+  background: #241440;
+  border: 1px solid #a879ec;
+  border-radius: 14px;
+  box-shadow: 0 5px 20px #0008;
+}
+
+.settings-menu[hidden] {
+  display: none !important;
+}
+
+.settings-menu label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.settings-menu select,
+.settings-menu button {
+  width: 100%;
+  margin: 5px 0;
+}
+</style>
+</head>
+
+<body>
+<h1>🌸 Luka AI 🤖</h1>
+<p>Your Anime Voice Assistant ✨</p>
+
+<div class="card">
+<div class="menu-wrap">
+  <button type="button" id="menuButton">⋮</button>
+
+  <div id="settingsMenu" class="settings-menu" hidden>
+   <button type="button" id="animeButton">🌸 Anime Mode</button>
+      <label for="language">🌐 Choose language</label>
+
+    <select id="language">
+      <option value="hi-IN">Hindi / हिंदी</option>
+      <option value="en-IN">English (India)</option>
+    </select>
+
+    <button type="button" id="stop">🔇 Stop voice</button>
+  </div>
+</div>
+<div id="chatScreen">
+    <p id="status">Bhai, Speak dabao aur bolo!</p>
+
+  <div id="messages" aria-live="polite">
+    <div class="msg bot">
+      🌸 Hello bhai! Main Luka AI hoon.
+      Hindi, English ya Hinglish mein baat karo!
+    </div>
+  </div>
+
+<form id="form">
+  <input id="question" placeholder="Type your message..." required>
+
+  <button type="button" id="mic">🎤</button>
+
+  <button type="submit">Send ➤</button>
+</form>
+</div>
+<div id="animeScreen" class="anime-screen">
+
+  <button type="button" id="backButton">⬅ Back</button>
+
+  <h2>🌸 Luka AI</h2>
+  <p>Your Anime Voice Assistant</p>
+
+  <div id="animeAvatar" class="anime-avatar">
+    🧑🏻‍🎤
+  </div>
+
+  <div id="animeBubble" class="anime-bubble">
+    Hello bhai! Main Luka AI hoon!
+  </div>
+
+  <p id="animeStatus">Anime Mode Active ✨</p>
+
+  <button type="button" id="animeMic">🎤 Speak to Luka</button>
+
+</div>
+</div>
+
+<script>
+const statusText = document.getElementById("status");
+const language = document.getElementById("language");
+const question = document.getElementById("question");
+const messages = document.getElementById("messages");
+const menuButton = document.getElementById("menuButton");
+const settingsMenu = document.getElementById("settingsMenu");
+
+menuButton.addEventListener("click", function() {
+  settingsMenu.hidden = !settingsMenu.hidden;
+});
+
+    const chatScreen = document.getElementById("chatScreen");
+const animeScreen = document.getElementById("animeScreen");
+const animeButton = document.getElementById("animeButton");
+const backButton = document.getElementById("backButton");
+const animeMic = document.getElementById("animeMic");
+const animeAvatar = document.getElementById("animeAvatar");
+const animeBubble = document.getElementById("animeBubble");
+const animeStatus = document.getElementById("animeStatus");
+
+animeButton.addEventListener("click", function() {
+  chatScreen.style.display = "none";
+  animeScreen.classList.add("active");
+  settingsMenu.hidden = true;
+  animeStatus.textContent = "Anime Mode Active ✨";
+});
+
+backButton.addEventListener("click", function() {
+  animeScreen.classList.remove("active");
+  chatScreen.style.display = "block";
+});
+
+animeMic.addEventListener("click", function() {
+  document.getElementById("mic").click();
+  animeStatus.textContent = "🎤 Luka sun raha hai...";
+});
+    
+function addMessage(text, type) {
+  const div = document.createElement("div");
+  div.className = "msg " + type;
+  div.textContent = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+// Normalize text to make matching easier
+function normalize(text) {
+  return text
+    .toLocaleLowerCase()
+    .normalize("NFKC")
+    .replace(/[?!.,;:'"()[\]{}।,،]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Edit-distance check helps with small spelling mistakes.
+// It does not understand every language or every question.
+function similar(a, b) {
+  a = normalize(a);
+  b = normalize(b);
+
+  if (a === b) return true;
+  if (!a || !b) return false;
+
+  if (a.includes(b) || b.includes(a)) {
+    return Math.min(a.length, b.length) >= 3;
+  }
+
+  if (Math.abs(a.length - b.length) > 2) return false;
+
+  let previous = Array.from(
+    { length: b.length + 1 }, (_, i) => i
+  );
+
+  for (let i = 1; i <= a.length; i++) {
+    const current = [i];
+
+    for (let j = 1; j <= b.length; j++) {
+      current[j] = Math.min(
+        current[j - 1] + 1,
+        previous[j] + 1,
+        previous[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+      );
+    }
+
+    previous = current;
+  }
+
+  return previous[b.length] <=
+    (Math.max(a.length, b.length) > 7 ? 2 : 1);
+}
+
+const knowledge = [
+  // 1–10: Greetings and Luka AI
+  { words: ["hello", "hi", "hey", "hii", "namaste", "salam", "assalamu alaikum", "how are you", "kaise ho"], answer: "Hello bhai! Main Luka AI hoon. Tum kaise ho?" },
+  { words: ["your name", "what is your name", "tumhara naam", "who are you", "tum kaun ho"], answer: "Mera naam Luka AI hai! Main tumhara voice assistant hoon." },
+  { words: ["who made you", "who created you", "tumhe kisne banaya"], answer: "Shoheb ne Luka AI project banana shuru kiya hai!" },
+  { words: ["what can you do", "tum kya kar sakte ho"], answer: "Main apne stored questions ke answers de sakta hoon, aur tum mujhe naye answers sikha sakte ho." },
+  { words: ["thank you", "thanks", "shukriya"], answer: "You're welcome bhai! Luka AI ko aur smart banate hain!" },
+  { words: ["good morning", "subah bakhair"], answer: "Good morning bhai! Tumhara din achha guzre!" },
+  { words: ["good afternoon"], answer: "Good afternoon bhai! Kaise ho?" },
+  { words: ["good evening"], answer: "Good evening bhai! Luka AI mein tumhara swagat hai." },
+  { words: ["good night", "shubh ratri"], answer: "Good night bhai! Aaram se sona." },
+  { words: ["bye", "goodbye", "allah hafiz", "khuda hafiz"], answer: "Allah Hafiz bhai! Phir baat karenge." },
+
+  // 11–20: AI and technology
+  { words: ["what is ai", "ai kya hai", "artificial intelligence kya hai"], answer: "AI ka full form Artificial Intelligence hai. Yeh computers ko language aur patterns par kaam karne mein madad karti hai." },
+  { words: ["what is machine learning", "machine learning kya hai"], answer: "Machine learning AI ka ek hissa hai jo data se patterns seekhta hai." },
+  { words: ["what is a chatbot", "chatbot kya hai"], answer: "Chatbot ek program hai jo text ya voice ke zariye logon se baat karta hai." },
+  { words: ["what is a robot", "robot kya hai"], answer: "Robot ek machine hai jo tasks karne ke liye program ki ja sakti hai." },
+  { words: ["what is an algorithm", "algorithm kya hai"], answer: "Algorithm kisi problem ko solve karne ke step-by-step instructions hain." },
+  { words: ["what is data", "data kya hai"], answer: "Data information hoti hai jise computer store aur process kar sakta hai." },
+  { words: ["what is internet", "internet kya hai"], answer: "Internet duniya bhar ke computers aur devices ko connect karta hai." },
+  { words: ["what is a website", "website kya hai"], answer: "Website web pages ka collection hoti hai jise browser mein dekha ja sakta hai." },
+  { words: ["what is software", "software kya hai"], answer: "Software programs aur instructions ka collection hai jo computer ko kaam karna batata hai." },
+  { words: ["what is hardware", "hardware kya hai"], answer: "Hardware computer ke physical parts hote hain, jaise keyboard, screen aur processor." },
+
+  // 21–30: Python basics
+  { words: ["what is python", "python kya hai", "python language"], answer: "Python ek beginner-friendly programming language hai. Isse AI, websites aur automation banayi ja sakti hai." },
+  { words: ["what is coding", "coding kya hai", "programming kya hai"], answer: "Coding ka matlab computer ko instructions likhkar dena hai." },
+  { words: ["what is a variable", "variable kya hai"], answer: "Variable ek naam hai jisme value store kar sakte hain, jaise name = 'Shoheb'." },
+  { words: ["what is a string", "string kya hai"], answer: "Python mein string text hota hai, jaise 'Hello'." },
+  { words: ["what is an integer", "integer kya hai"], answer: "Integer ek poora number hai, jaise 5, 10 ya 100." },
+  { words: ["what is a float", "float kya hai"], answer: "Float decimal number hota hai, jaise 3.14." },
+  { words: ["what is boolean", "boolean kya hai"], answer: "Boolean ki do values hoti hain: True aur False." },
+  { words: ["what is print in python", "print function"], answer: "Python ka print() function screen par output dikhata hai." },
+  { words: ["what is input in python", "input function"], answer: "Python ka input() function user se information leta hai." },
+  { words: ["what is a function", "function kya hai"], answer: "Function reusable code ka block hai jo ek specific task karta hai." },
+
+  // 31–40: Python concepts
+  { words: ["what is a loop", "loop kya hai"], answer: "Loop code ko baar-baar chalane ke liye use hota hai." },
+  { words: ["what is a for loop", "for loop kya hai"], answer: "For loop sequence ke items par ek-ek karke code chalata hai." },
+  { words: ["what is a while loop", "while loop kya hai"], answer: "While loop tab tak chalta hai jab tak uski condition True hoti hai." },
+  { words: ["what is if else", "if else kya hai"], answer: "If aur else conditions ke basis par program ko decision lene dete hain." },
+  { words: ["what is elif", "elif kya hai"], answer: "Elif doosri condition check karta hai agar pehli condition False ho." },
+  { words: ["what is a list", "list in python"], answer: "List ek variable mein multiple items store karti hai, jaise fruits = ['apple', 'mango']." },
+  { words: ["what is a dictionary", "dictionary in python"], answer: "Dictionary data ko key-value pairs mein store karti hai." },
+  { words: ["what is a tuple", "tuple kya hai"], answer: "Tuple items ka collection hai jise banane ke baad aam taur par change nahi kar sakte." },
+  { words: ["what is a comment", "python comment"], answer: "Python mein # se comment shuru hota hai. Comment code ko samjhane ke kaam aata hai." },
+  { words: ["what is indentation", "indentation kya hai"], answer: "Indentation line ke shuru mein spaces hain. Python mein yeh code blocks define karti hain." },
+
+  // 41–50: Programming and web development
+  { words: ["what is java", "java kya hai"], answer: "Java ek programming language hai jisse apps aur software banaye ja sakte hain." },
+  { words: ["what is javascript", "javascript kya hai"], answer: "JavaScript websites ko interactive banane mein madad karti hai." },
+  { words: ["what is html", "html kya hai"], answer: "HTML web page ka structure banata hai." },
+  { words: ["what is css", "css kya hai"], answer: "CSS website ke colors, layout aur design ko control karta hai." },
+  { words: ["what is debugging", "debugging kya hai"], answer: "Debugging code mein problems dhoondhne aur fix karne ka process hai." },
+  { words: ["what is a syntax error", "syntax error"], answer: "Syntax error tab hota hai jab code programming language ke rules follow nahi karta." },
+  { words: ["what is an ide", "ide kya hai"], answer: "IDE ek application hai jahan programmers code likh aur test kar sakte hain." },
+  { words: ["what is an api", "api kya hai"], answer: "API alag-alag software programs ko ek doosre se communicate karne deti hai." },
+  { words: ["what is open source", "open source kya hai"], answer: "Open-source software ka code ek license ke tahat dekhne, use karne ya modify karne ke liye available ho sakta hai." },
+  { words: ["what is an operating system", "operating system kya hai"], answer: "Operating system computer ke hardware aur applications ko manage karta hai, jaise Linux, Windows aur Android." },
+
+  // 51–60: Science
+  { words: ["what is science", "science kya hai"], answer: "Science evidence aur experiments ki madad se natural world ko samajhne ka tareeqa hai." },
+  { words: ["what is gravity", "gravity kya hai"], answer: "Gravity mass wali cheezon ke beech attraction ka force hai." },
+  { words: ["what is energy", "energy kya hai"], answer: "Energy work karne ya change lane ki capacity hai." },
+  { words: ["what is electricity", "electricity kya hai"], answer: "Electricity electric charges ki presence aur movement se related hai." },
+  { words: ["what is an atom", "atom kya hai"], answer: "Atom chemical element ki basic unit hai." },
+  { words: ["what is a molecule", "molecule kya hai"], answer: "Molecule do ya zyada atoms ka group hai jo chemical bonds se jude hote hain." },
+  { words: ["what is water made of", "water formula"], answer: "Water ka chemical formula H2O hai: ek molecule mein do hydrogen atoms aur ek oxygen atom hota hai." },
+  { words: ["what is photosynthesis", "photosynthesis kya hai"], answer: "Photosynthesis mein plants sunlight ki energy use karke carbon dioxide aur water se sugars banate hain." },
+  { words: ["what is the solar system", "solar system kya hai"], answer: "Solar system mein Sun aur uske gird ghoomne wale planets aur doosre objects shamil hain." },
+  { words: ["what is light", "light kya hai"], answer: "Visible light electromagnetic radiation hai jise human eyes dekh sakti hain." },
+
+  // 61–70: General knowledge
+  { words: ["capital of india", "india ki capital"], answer: "New Delhi India ki capital hai." },
+  { words: ["national animal of india", "india ka national animal"], answer: "Bengal tiger India ka national animal hai." },
+  { words: ["national bird of india", "india ka national bird"], answer: "Indian peacock India ka national bird hai." },
+  { words: ["how many days in a week", "days in a week"], answer: "Ek week mein 7 days hote hain." },
+  { words: ["how many months in a year", "months in a year"], answer: "Ek year mein 12 months hote hain." },
+  { words: ["how many hours in a day", "hours in a day"], answer: "Ek day mein 24 hours hote hain." },
+  { words: ["how many planets", "number of planets"], answer: "Hamare solar system mein 8 recognized planets hain." },
+  { words: ["closest planet to the sun", "nearest planet to the sun"], answer: "Mercury Sun ke sabse paas wala planet hai." },
+  { words: ["red planet", "which planet is red"], answer: "Mars ko Red Planet kaha jata hai." },
+  { words: ["largest ocean", "biggest ocean"], answer: "Pacific Ocean duniya ka sabse bada ocean hai." },
+
+  // 71–80: Mathematics
+  { words: ["what is 2 plus 2", "2+2"], answer: "2 plus 2 equals 4." },
+  { words: ["what is 5 plus 5", "5+5"], answer: "5 plus 5 equals 10." },
+  { words: ["what is 10 minus 4", "10-4"], answer: "10 minus 4 equals 6." },
+  { words: ["what is 6 times 7", "6*7"], answer: "6 times 7 equals 42." },
+  { words: ["what is 20 divided by 5", "20/5"], answer: "20 divided by 5 equals 4." },
+  { words: ["what is a prime number", "prime number"], answer: "Prime number 1 se bada whole number hai jiske exactly do positive factors hote hain." },
+  { words: ["what is a fraction", "fraction kya hai"], answer: "Fraction kisi whole ke hissa ko dikhata hai, jaise one-half yani aadha." },
+  { words: ["what is a percentage", "percentage kya hai"], answer: "Percentage kisi value ko 100 ke hisaab se express karta hai." },
+  { words: ["what is a triangle", "triangle kya hai"], answer: "Triangle ek shape hai jiske 3 sides aur 3 angles hote hain." },
+  { words: ["what is pi", "pi value"], answer: "Pi circle ki circumference aur diameter ka ratio hai, jo lagbhag 3.14159 hai." },
+
+  // 81–90: Animation and filmmaking
+  { words: ["what is animation", "animation kya hai"], answer: "Animation images ko sequence mein dikhakar movement ka illusion banati hai." },
+  { words: ["what is anime", "anime kya hai"], answer: "Anime Japan se judi animation styles aur storytelling ke liye mashhoor hai." },
+  { words: ["what is 2d animation", "2d animation kya hai"], answer: "2D animation do dimensions mein drawings ya images ko move karti hai." },
+  { words: ["what is 3d animation", "3d animation kya hai"], answer: "3D animation digital three-dimensional models ko movement deti hai." },
+  { words: ["what is a storyboard", "storyboard kya hai"], answer: "Storyboard drawings ka sequence hai jo film ya animation ke scenes plan karta hai." },
+  { words: ["what is character design", "character design kya hai"], answer: "Character design mein character ki appearance, clothes aur visual personality plan ki jati hai." },
+  { words: ["what is a frame in animation", "animation frame"], answer: "Frame animation ka ek still image hota hai." },
+  { words: ["what is fps", "fps meaning"], answer: "FPS ka matlab frames per second hai. Yeh batata hai ki ek second mein kitne frames dikhte hain." },
+  { words: ["what is filmmaking", "filmmaking kya hai"], answer: "Filmmaking mein film ki planning, shooting, sound aur editing shamil hain." },
+  { words: ["how to become an animator", "become an animator"], answer: "Drawing, timing, movement aur storytelling ki practice karo. Chhoti animations banao aur apna portfolio tayyar karo." },
+
+  // 91–100: Learning, security and computers
+  { words: ["how to learn coding", "learn coding"], answer: "Bhai, basics se shuru karo, roz practice karo aur chhote projects banao." },
+  { words: ["how to make an ai", "make my own ai"], answer: "Python seekho, programming basics samjho aur phir data, machine learning aur AI tools explore karo." },
+  { words: ["what is cybersecurity", "cybersecurity kya hai"], answer: "Cybersecurity computers, accounts, networks aur data ko digital threats se protect karti hai." },
+  { words: ["what is a password", "password kya hai"], answer: "Password account ko protect karta hai. Har account ke liye strong, unique password use karo aur ise share mat karo." },
+  { words: ["what is online privacy", "online privacy kya hai"], answer: "Online privacy ka matlab apni personal information ke sharing aur use par control rakhna hai." },
+  { words: ["what is cloud computing", "cloud computing kya hai"], answer: "Cloud computing internet ke zariye computing services provide karti hai." },
+  { words: ["what is a database", "database kya hai"], answer: "Database information ko organize karta hai taaki use store, search aur update kiya ja sake." },
+  { words: ["what is machine code", "machine code kya hai"], answer: "Machine code low-level instructions hoti hain jinhe processor execute kar sakta hai." },
+  { words: ["what is a computer", "computer kya hai"], answer: "Computer ek electronic device hai jo instructions ke mutabiq data process karta hai." },
+  { words: ["what is your goal", "your goal"], answer: "Mera goal available answers se tumhari learning mein madad karna aur Luka AI ko behtar banana hai." }
+];
+
+function calculateMath(text) {
+  let expression = text.toLowerCase()
+    .replace(/what is|calculate|solve|kitna hai|kya hai/g, "")
+    .replace(/plus|add|jod/g, "+")
+    .replace(/minus|subtract|ghata/g, "-")
+    .replace(/times|multiply|into|guna/g, "*")
+    .replace(/divided by|divide|baant/g, "/")
+    .replace(/[^0-9+\-*/().%\s]/g, "")
+    .trim();
+
+  if (!expression || !/[0-9]/.test(expression)) return null;
+  if (!/[+\-*/%]/.test(expression)) return null;
+
+  // Safe arithmetic parser: no eval() or Function()
+  const tokens = expression.match(/\d+(?:\.\d+)?|[()+\-*/%]/g);
+  if (!tokens || tokens.join("") !== expression.replace(/\s/g, "")) {
+    return null;
+  }
+
+  let position = 0;
+
+  function primary() {
+    const token = tokens[position++];
+
+    if (token === "(") {
+      const value = addSubtract();
+      if (tokens[position++] !== ")") throw Error();
+      return value;
+    }
+
+    if (token === "-") return -primary();
+    if (token === "+") return primary();
+
+    const number = Number(token);
+    if (!Number.isFinite(number)) throw Error();
+    return number;
+  }
+
+  function multiplyDivide() {
+    let value = primary();
+
+    while (["*", "/", "%"].includes(tokens[position])) {
+      const operator = tokens[position++];
+      const next = primary();
+
+      if ((operator === "/" || operator === "%") && next === 0) {
+        throw Error();
+      }
+
+      if (operator === "*") value *= next;
+      if (operator === "/") value /= next;
+      if (operator === "%") value %= next;
+    }
+
+    return value;
+  }
+
+  function addSubtract() {
+    let value = multiplyDivide();
+
+    while (tokens[position] === "+" || tokens[position] === "-") {
+      const operator = tokens[position++];
+      const next = multiplyDivide();
+
+      value = operator === "+" ? value + next : value - next;
+    }
+
+    return value;
+  }
+
+  try {
+    const answer = addSubtract();
+
+    if (position !== tokens.length || !Number.isFinite(answer)) {
+      return null;
+    }
+
+    return Number(answer.toFixed(8));
+  } catch (error) {
+    return null;
+  }
+}
+
+function findAnswer(text) {
+  const q = normalize(text);
+
+  // 1. Greetings
+  if (/^(hi|hello|hey|salam|namaste|assalamualaikum)$/.test(q)) {
+    return "Assalamualaikum bhai! 🌸 Main Luka AI hoon. Aaj kya seekhna hai?";
+  }
+
+  // 2. Current time
+  if (
+    q.includes("time") ||
+    q.includes("kitne baje") ||
+    q.includes("waqt")
+  ) {
+    return "Abhi time hai " +
+      new Date().toLocaleTimeString("en-IN") + ".";
+  }
+
+  // 3. Current date
+  if (
+    q.includes("today date") ||
+    q.includes("aaj ki date") ||
+    q.includes("aaj ka din") ||
+    q.includes("what is the date")
+  ) {
+    return "Aaj ki date hai " +
+      new Date().toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }) + ".";
+  }
+
+  // 4. Maths
+  if (
+    /\d/.test(q) &&
+    (/[+\-*/%]/.test(q) ||
+     /plus|minus|times|multiply|divide|calculate|kitna hai/.test(q))
+  ) {
+    const result = calculateMath(q);
+
+    if (result !== null) {
+      return "Bhai, answer hai: " + result + " 🧠";
+    }
+
+    return "Bhai, maths expression samajh nahi aaya. Dobara try karo.";
+  }
+
+  // 5. Luka AI identity
+  if (
+    q.includes("your name") ||
+    q.includes("tumhara naam") ||
+    q.includes("who are you")
+  ) {
+    return "Mera naam Luka AI hai! 🌸 Main tumhara personal assistant hoon.";
+  }
+
+  // 6. Better knowledge matching
+  for (const item of knowledge) {
+    for (const word of item.words) {
+      const w = normalize(word);
+
+      if (q === w || (w.length >= 4 && q.includes(w))) {
+        return item.answer;
+      }
+    }
+  }
+
+  // 7. Spelling mistake matching
+  for (const item of knowledge) {
+    for (const word of item.words) {
+      const w = normalize(word);
+
+      if (
+        Math.abs(q.length - w.length) <= 2 &&
+        q.length <= 40 &&
+        similar(q, w)
+      ) {
+        return item.answer;
+      }
+    }
+  }
+
+  // 8. Honest fallback
+  return "Bhai, ye interesting question hai! ❤️ Lekin iska jawab abhi meri programmed knowledge mein nahi hai. Main abhi API ke bina basic mode mein hoon.";
+}
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) {
+    statusText.textContent = "Voice output supported nahi hai.";
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  const voice = new SpeechSynthesisUtterance(text);
+  voice.lang = language.value;
+  voice.rate = 0.95;
+
+  animeBubble.textContent = text;
+
+  voice.onstart = function() {
+    animeAvatar.classList.add("talking");
+    animeStatus.textContent = "🗣️ Luka is speaking...";
+  };
+
+  voice.onend = function() {
+    animeAvatar.classList.remove("talking");
+    animeStatus.textContent = "✨ Luka is ready!";
+  };
+
+  voice.onerror = function() {
+    animeAvatar.classList.remove("talking");
+    animeStatus.textContent = "Voice playback error.";
+  };
+
+  speechSynthesis.speak(voice);
+}
+
+function reply(text) {
+  const answer = findAnswer(text);
+  addMessage(answer, "bot");
+  speak(answer);
+}
+
+document.getElementById("form").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const text = question.value.trim();
+  if (!text) return;
+
+  addMessage(text, "user");
+  question.value = "";
+  reply(text);
+});
+
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+let recognition = null;
+
+document.getElementById("mic").addEventListener("click", function() {
+  if (!SpeechRecognition) {
+    statusText.textContent =
+      "Voice input supported nahi hai. Supported browser try karo.";
+    return;
+  }
+
+  if (recognition) {
+    try { recognition.abort(); } catch (error) {}
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.lang = language.value;
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onstart = function() {
+    statusText.textContent = "🎤 Sun raha hoon... Ab bolo!";
+  };
+
+  recognition.onresult = function(event) {
+    const text = event.results[0][0].transcript;
+
+    addMessage(text, "user");
+    reply(text);
+
+    statusText.textContent = "Bhai, tumhari baat sun li!";
+  };
+
+  recognition.onerror = function(event) {
+    statusText.textContent =
+      "Voice error: " + event.error +
+      ". Microphone permission aur internet check karo.";
+  };
+
+  recognition.onend = function() {
+    if (statusText.textContent.includes("Sun raha")) {
+      statusText.textContent = "Bhai, dobara Speak dabakar try karo.";
+    }
+  };
+
+  try {
+    recognition.start();
+  } catch (error) {
+    statusText.textContent = "Dobara Speak dabakar try karo.";
+  }
+});
+
+document.getElementById("stop").addEventListener("click", function() {
+  if (recognition) {
+    try { recognition.abort(); } catch (error) {}
+  }
+
+  if ("speechSynthesis" in window) {
+    speechSynthesis.cancel();
+  }
+
+  statusText.textContent = "Voice stop kar di.";
+});
+</script>
+</body>
+</html>
