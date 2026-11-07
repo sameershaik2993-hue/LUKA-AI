@@ -538,7 +538,20 @@ const lukaMemory = {
   lastQuestion: "",
   conversationCount: 0
 };
-function findAnswer(text) {
+function findAnswer(text) {// Remember user's name
+if (text.toLowerCase().startsWith("my name is ")) {
+  lukaMemory.userName = text.slice(11).trim();
+  return "Nice to meet you, " + lukaMemory.userName + "! I will remember your name.";
+}
+
+if (
+  text.toLowerCase().includes("what is my name") ||
+  text.toLowerCase().includes("mera naam kya hai")
+) {
+  return lukaMemory.userName
+    ? "Your name is " + lukaMemory.userName + "!"
+    : "You haven't told me your name yet.";
+}  
   const q = normalize(text);
 
   // 1. Greetings
