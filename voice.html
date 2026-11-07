@@ -532,7 +532,12 @@ function calculateMath(text) {
     return null;
   }
 }
-
+// Luka AI Conversation Memory
+const lukaMemory = {
+  userName: "",
+  lastQuestion: "",
+  conversationCount: 0
+};
 function findAnswer(text) {
   const q = normalize(text);
 
